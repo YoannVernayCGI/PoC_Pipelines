@@ -23,3 +23,17 @@ steps:
     echo "- **Message** : $COMMIT_MSG" >> wiki-temp/DernierCommit.md
   displayName: "Créer page Markdown avec dernier commit"
   name: GenerateMarkdown
+
+- script: |
+    echo "Clonage du repo Wiki"
+    git clone https://$(System.AccessToken)@dev.azure.com/$(System.CollectionUri)/$(System.TeamProject)/_git/$(Build.Repository.Name).wiki wiki-repo
+    cp wiki-temp/DernierCommit.md wiki-repo/
+    cd wiki-repo
+    git config user.email "build@azuredevops"
+    git config user.name "Azure DevOps"
+    git add .
+    git commit -m "Mise à jour du dernier commit"
+    git push
+  displayName: "Pousser la page dans le Wiki"
+  env:
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
