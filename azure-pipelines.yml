@@ -1,39 +1,32 @@
 trigger:
-- main  # ou la branche que vous souhaitez surveiller
+- master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- checkout: self
-  persistCredentials: true  # nécessaire pour pousser dans le repo .wiki
-
 - script: |
     echo "Récupération du dernier commit"
     COMMIT_HASH=$(git log -1 --pretty=format:"%H")
     COMMIT_MSG=$(git log -1 --pretty=format:"%s")
 
-    echo "Commit Hash: $COMMIT_HASH"
-    echo "Commit Msg : $COMMIT_MSG"
+    echo "Commit : $COMMIT_MSG"
+    echo "Hash   : $COMMIT_HASH"
 
-    # Création d'un fichier Markdown
-    mkdir wiki-temp
-    echo "# Dernier commit" > wiki-temp/DernierCommit.md
-    echo "- **Hash** : $COMMIT_HASH" >> wiki-temp/DernierCommit.md
-    echo "- **Message** : $COMMIT_MSG" >> wiki-temp/DernierCommit.md
-  displayName: "Créer page Markdown avec dernier commit"
-  name: GenerateMarkdown
+    # Nom de la page
+    PAGE_NAME="${COMMIT_MSG} - ${COMMIT_HASH}"
+    PAGE_NAME_ESCAPED=$(echo "$PAGE_NAME" | jq -s -R -r @uri)
 
-- script: |
-    echo "Clonage du repo Wiki"
-    git clone https://$(System.AccessToken)@dev.azure.com/$(System.CollectionUri)/$(System.TeamProject)/_git/$(Build.Repository.Name).wiki wiki-repo
-    cp wiki-temp/DernierCommit.md wiki-repo/
-    cd wiki-repo
-    git config user.email "build@azuredevops"
-    git config user.name "Azure DevOps"
-    git add .
-    git commit -m "Mise à jour du dernier commit"
-    git push
-  displayName: "Pousser la page dans le Wiki"
+    # Contenu de la page en Markdown
+    CONTENT="# Détails du commit\n- **Message** : $COMMIT_MSG\n- **Hash** : $COMMIT_HASH"
+
+    echo "Création de la page wiki $PAGE_NAME"
+
+    curl -X PUT \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Basic $(echo -n :$SYSTEM_ACCESSTOKEN | base64)" \
+      "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(wikiID)/pages?path=/$PAGE_NAME_ESCAPED&api-version=7.1-preview.1" \
+      -d "$(jq -n --arg content "$CONTENT" '{content: $content}')"
   env:
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  displayName: "Créer une page Wiki"
