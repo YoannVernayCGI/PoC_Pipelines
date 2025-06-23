@@ -17,7 +17,7 @@ steps:
 
     Write-Host "Création de la page: $pageName"
 
-    $encodedPageName = [System.Uri]::EscapeDataString("[RELEASE NOTE - DEVELOP](/RELEASE-NOTE-%2D-DEVELOP)/$pageName")
+    $encodedPageName = [System.Uri]::EscapeDataString("/RELEASE NOTE - DEVELOP/$pageName")
 
     $token = "$(myToken)"
     $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$token"))
