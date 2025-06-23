@@ -20,7 +20,7 @@ steps:
     $encodedPageName = [System.Uri]::EscapeDataString("/$pageName")
 
     $token = "$(myToken)"
-    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$(myToken)"))
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$token"))
 
     $uri =  "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(WikiID)/pages?path=$encodedPageName&api-version=7.1-preview.1"
     Invoke-RestMethod -Uri $uri`
