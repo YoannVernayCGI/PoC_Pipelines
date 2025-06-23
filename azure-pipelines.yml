@@ -1,8 +1,9 @@
+
 trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   organisation: 'maxxiltest'
@@ -10,15 +11,15 @@ variables:
   wikiID: 'Wiki1'
 
 steps:
-- script: |
-    echo "Récupération du dernier commit"
-    COMMIT_HASH=$(git log -1 --pretty=format:"%H")
-    COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+- powershell: |
+    Write-Host "Récupération du dernier commit"
+    $commitHash = git log -1 --pretty=format:"%H"
+    $commitMsg = git log -1 --pretty=format:"%s"
 
-    echo "Commit : $COMMIT_MSG"
-    echo "Hash   : $COMMIT_HASH"
+    Write-Host "Commit : $commitMsg"
+    Write-Host "Hash   : $commitHash"
 
-    PAGE_NAME="${COMMIT_MSG} - ${COMMIT_HASH}"
-    CONTENT="Contenu de la page"
+    $pageName = "$commitMsg - $commitHash"
+    $content = "Contenu de la page"
 
-    echo "Création de la page: $PAGE_NAME"
+    Write-Host "Création de la page: $pageName"
