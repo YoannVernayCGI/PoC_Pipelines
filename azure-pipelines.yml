@@ -4,6 +4,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  organisation: 'maxxiltest'
+  projet: 'Poc_Pipeline'
+  wikiID: 'Wiki Pages'
+
 steps:
 - script: |
     echo "Récupération du dernier commit"
@@ -13,11 +18,14 @@ steps:
     echo "Commit : $COMMIT_MSG"
     echo "Hash   : $COMMIT_HASH"
 
-    # Nom de la page
-    PAGE_NAME="${COMMIT_MSG} - ${COMMIT_HASH}"
+    # On limite le message à 50 caractères max pour éviter les erreurs d'URL
+    COMMIT_MSG_TRIMMED=$(echo "$COMMIT_MSG" | cut -c1-50)
+
+    # Construction du nom de la page
+    PAGE_NAME="${COMMIT_MSG_TRIMMED} - ${COMMIT_HASH}"
     PAGE_NAME_ESCAPED=$(echo "$PAGE_NAME" | jq -s -R -r @uri)
 
-    # Contenu de la page en Markdown
+    # Contenu Markdown
     CONTENT="# Détails du commit\n- **Message** : $COMMIT_MSG\n- **Hash** : $COMMIT_HASH"
 
     echo "Création de la page wiki $PAGE_NAME"
