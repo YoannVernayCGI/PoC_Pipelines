@@ -4,13 +4,8 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  organisation: 'maxxiltest'
-  projet: 'Poc_Pipeline'
-  wikiID: 'Wiki1'
-
 steps:
-- powershell: |
+- powershell:
     Write-Host "Récupération du dernier commit"
     $commitHash = git log -1 --pretty=format:"%H"
     $commitMsg = git log -1 --pretty=format:"%s"
@@ -28,7 +23,7 @@ steps:
     $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$(myToken)"))
 
     # Appel de l'API REST pour créer la page
-    Invoke-RestMethod -Uri "https://dev.azure.com/maxxiltest/Poc_Pipeline/_apis/wiki/wikis/Wiki1/pages?path=$encodedPageName&api-version=7.1-preview.1" `
+    Invoke-RestMethod -Uri "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(wikiID)/pages?path=$encodedPageName&api-version=7.1-preview.1" `
         -Headers @{Authorization = "Basic $base64AuthInfo"} `
         -Method PUT `
         -ContentType "application/json" `
