@@ -1,0 +1,25 @@
+trigger:
+- main  # ou la branche que vous souhaitez surveiller
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  persistCredentials: true  # nécessaire pour pousser dans le repo .wiki
+
+- script: |
+    echo "Récupération du dernier commit"
+    COMMIT_HASH=$(git log -1 --pretty=format:"%H")
+    COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+
+    echo "Commit Hash: $COMMIT_HASH"
+    echo "Commit Msg : $COMMIT_MSG"
+
+    # Création d'un fichier Markdown
+    mkdir wiki-temp
+    echo "# Dernier commit" > wiki-temp/DernierCommit.md
+    echo "- **Hash** : $COMMIT_HASH" >> wiki-temp/DernierCommit.md
+    echo "- **Message** : $COMMIT_MSG" >> wiki-temp/DernierCommit.md
+  displayName: "Créer page Markdown avec dernier commit"
+  name: GenerateMarkdown
