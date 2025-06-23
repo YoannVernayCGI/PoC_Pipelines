@@ -25,7 +25,7 @@ steps:
     $encodedPageName = [System.Uri]::EscapeDataString("/$pageName")
 
     $token = "$(myToken)"
-    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$token"))
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$(myToken)"))
 
     # Appel de l'API REST pour créer la page
     Invoke-RestMethod -Uri "https://dev.azure.com/maxxiltest/Poc_Pipeline/_apis/wiki/wikis/Wiki1/pages?path=$encodedPageName&api-version=7.1-preview.1" `
