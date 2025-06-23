@@ -8,36 +8,30 @@ variables:
   organisation: 'maxxiltest'
   projet: 'Poc_Pipeline'
   wikiID: 'Wiki1'
-  connectionToken: '$(myToken)'  
 
 steps:
 - powershell: |
     Write-Host "Récupération du dernier commit"
     $commitHash = git log -1 --pretty=format:"%H"
     $commitMsg = git log -1 --pretty=format:"%s"
-
     Write-Host "Commit : $commitMsg"
     Write-Host "Hash   : $commitHash"
 
     $pageName = "$commitMsg - $commitHash"
-    $content = "## Page créée automatiquement`nCommit: $commitMsg`nHash: $commitHash"
+    $content = "Contenu de la page"
 
     Write-Host "Création de la page: $pageName"
 
-    # Authentification
-    $connectionToken = "$env:connectionToken"
-    $base64AuthInfo = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$connectionToken"))
+    $encodedPageName = [System.Uri]::EscapeDataString("/$pageName")
 
-    # Construction de l'URL
-    $encodedPageName = [System.Uri]::EscapeDataString($pageName)
-    $wikiUri = "https://dev.azure.com/$env:organisation/$env:projet/_apis/wiki/wikis/$env:wikiID/pages?path=/$encodedPageName&api-version=7.1-preview.1"
+    $token = $(myToken)
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$token"))
 
-    # Appel PUT pour créer ou mettre à jour une page
-    Invoke-RestMethod -Uri $wikiUri `
-        -Headers @{ Authorization = "Basic $base64AuthInfo" } `
-        -Method Put `
+    # Appel de l'API REST pour créer la page
+    Invoke-RestMethod -Uri "https://dev.azure.com/maxxiltest/Poc_Pipeline/_apis/wiki/wikis/Wiki1/pages?path=$encodedPageName&api-version=7.1-preview.1" `
+        -Headers @{Authorization = "Basic $base64AuthInfo"} `
+        -Method PUT `
         -ContentType "application/json" `
-        -Body (@{
-            content = $content
-        } | ConvertTo-Json -Depth 3)
+        -Body (@{ content = $content } | ConvertTo-Json -Depth 10)
+
   displayName: 'Créer une page Wiki avec le dernier commit'
