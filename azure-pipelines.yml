@@ -5,7 +5,7 @@ pool:
   vmImage: 'windows-latest'
 
 steps:
-- powershell:
+- powershell: |
     Write-Host "Récupération du dernier commit"
     $commitHash = git log -1 --pretty=format:"%H"
     $commitMsg = git log -1 --pretty=format:"%s"
@@ -22,8 +22,8 @@ steps:
     $token = "$(myToken)"
     $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(":$(myToken)"))
 
-    # Appel de l'API REST pour créer la page
-    Invoke-RestMethod -Uri "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(wikiID)/pages?path=$encodedPageName&api-version=7.1-preview.1" `
+    $uri =  "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(WikiID)/pages?path=$encodedPageName&api-version=7.1-preview.1"
+    Invoke-RestMethod -Uri $uri`
         -Headers @{Authorization = "Basic $base64AuthInfo"} `
         -Method PUT `
         -ContentType "application/json" `
