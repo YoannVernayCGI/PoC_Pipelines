@@ -32,7 +32,7 @@ steps:
 
     curl -X PUT \
       -H "Content-Type: application/json" \
-      -H "Authorization: Basic $(echo -n :$SYSTEM_ACCESSTOKEN | base64)" \
+      -H "Authorization: Basic $(echo -n :$SYSTEM_ACCESSTOKEN | base64)"
       "https://dev.azure.com/$(organisation)/$(projet)/_apis/wiki/wikis/$(wikiID)/pages?path=/$PAGE_NAME_ESCAPED&api-version=7.1-preview.1" \
       -d "$(jq -n --arg content "$CONTENT" '{content: $content}')"
   env:
