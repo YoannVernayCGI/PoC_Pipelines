@@ -29,8 +29,8 @@ steps:
     $base64AuthInfo = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$connectionToken"))
 
     # Construction de l'URL
-    $encodedPageName = [System.Web.HttpUtility]::UrlEncode($pageName)
-    $wikiUri = "https://dev.azure.com/$env:organisation/$env:projet/_apis/wiki/wikis/$env:wikiID/pages?path=/$encodedPageName&api-version=7.1-preview.1"
+    #$encodedPageName = [System.Web.HttpUtility]::UrlEncode($pageName)
+    $wikiUri = "https://dev.azure.com/$env:organisation/$env:projet/_apis/wiki/wikis/$env:wikiID/pages?path=/$pageName&api-version=7.1-preview.1"
 
     # Appel PUT pour créer ou mettre à jour une page
     Invoke-RestMethod -Uri $wikiUri `
