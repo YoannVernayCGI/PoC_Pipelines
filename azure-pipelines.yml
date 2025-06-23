@@ -1,4 +1,3 @@
-
 trigger:
 - master
 
@@ -9,6 +8,7 @@ variables:
   organisation: 'maxxiltest'
   projet: 'Poc_Pipeline'
   wikiID: 'Wiki1'
+  connectionToken: '$(myToken)'  
 
 steps:
 - powershell: |
@@ -20,6 +20,24 @@ steps:
     Write-Host "Hash   : $commitHash"
 
     $pageName = "$commitMsg - $commitHash"
-    $content = "Contenu de la page"
+    $content = "## Page créée automatiquement`nCommit: $commitMsg`nHash: $commitHash"
 
     Write-Host "Création de la page: $pageName"
+
+    # Authentification
+    $connectionToken = "$env:connectionToken"
+    $base64AuthInfo = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$connectionToken"))
+
+    # Construction de l'URL
+    $encodedPageName = [System.Web.HttpUtility]::UrlEncode($pageName)
+    $wikiUri = "https://dev.azure.com/$env:organisation/$env:projet/_apis/wiki/wikis/$env:wikiID/pages?path=/$encodedPageName&api-version=7.1-preview.1"
+
+    # Appel PUT pour créer ou mettre à jour une page
+    Invoke-RestMethod -Uri $wikiUri `
+        -Headers @{ Authorization = "Basic $base64AuthInfo" } `
+        -Method Put `
+        -ContentType "application/json" `
+        -Body (@{
+            content = $content
+        } | ConvertTo-Json -Depth 3)
+  displayName: 'Créer une page Wiki avec le dernier commit'
