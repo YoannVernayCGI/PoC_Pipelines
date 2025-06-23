@@ -7,7 +7,7 @@ pool:
 variables:
   organisation: 'maxxiltest'
   projet: 'Poc_Pipeline'
-  wikiID: 'Wiki Pages'
+  wikiID: 'Wiki1'
 
 steps:
 - script: |
