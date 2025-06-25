@@ -28,5 +28,16 @@ steps:
         -Method PUT `
         -ContentType "application/json" `
         -Body (@{ content = $content } | ConvertTo-Json -Depth 10)
-
   displayName: 'Créer une page Wiki avec le dernier commit'
+  
+- task: EmailReportV2@2
+  inputs:
+    sendMailConditionConfig: 'Always'
+    subject: '[{environmentStatus}] {passPercentage} tests passed in $(Release.EnvironmentName) stage for $(Build.BuildNumber)'
+    toAddress: 'yoann.vernay@cgi.com'
+    defaultDomain: 'microsoft.com'
+    groupTestResultsBy: 'run'
+    includeCommits: true
+    maxTestFailuresToShow: '15'
+    includeOthersInTotal: false
+    usePreviousEnvironment: false
