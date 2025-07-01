@@ -9,4 +9,4 @@ steps:
 - powershell: |
     Write-Host "Changement de branche"
     
-  displayName: 'Créer une page Wiki avec le dernier commit'
+  displayName: 'Checkout+powershell'
