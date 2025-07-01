@@ -3,7 +3,7 @@ trigger: none
 pool:
   name: Default
   demands:
-    - Agent.OS -equals FR-D821LN3
+    - Agent.Name -equals FR-D821LN3
 
 steps:
 - powershell: |
